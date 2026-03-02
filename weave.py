@@ -27,29 +27,47 @@ def main():
 
 def parse(filepath, output_dir, output_file_name):
     output = ""
-    
+    in_list = False
+    NL = "\n"
+
     with open(filepath) as md_file:
         for line in md_file:
             line = line.rstrip("\n")
-            
+
             if line.startswith("#"):
+                if in_list:
+                    output += "</ul>" + NL
+                    in_list = False
+
                 hash_count = 0
                 for char in line:
                     if char == "#":
                         hash_count += 1
                     else:
                         break
+
                 text = line[hash_count:].strip()
                 new_line = f"<h{hash_count}>{text}</h{hash_count}>"
-                output += new_line + NL    
-            
-            #FIXME
-            elif line.startswith("-"):
-                new_line = f"<li>{line[2:]}</li>"
                 output += new_line + NL
+
+            elif line.startswith("-"):
+                if not in_list:
+                    output += "<ul>" + NL
+                    in_list = True
+
+                new_line = f"{INDENT}<li>{line[2:]}</li>"
+                output += new_line + NL
+
             else:
+                if in_list:
+                    output += "</ul>" + NL
+                    in_list = False
+
                 new_line = f"<p>{line}</p>"
                 output += new_line + NL
+
+    if in_list:
+        output += "</ul>" + NL
                 
     outputtofile(output, output_dir, output_file_name)
 
