@@ -1,6 +1,7 @@
 """
-Python tool to convert a md file to html file
+Python tool to convert a md file to html file :3
 """
+# important stuff 
 INDENT = (" " * 4)
 NL = "\n"
 # read in md file
@@ -8,6 +9,7 @@ filepath="file.md"
 mdfile = open(filepath)
 outputstr = ""
 
+# parsing !
 with open(filepath) as mdfile:
     for line in mdfile:
         line = line.rstrip("\n")
@@ -23,6 +25,7 @@ with open(filepath) as mdfile:
             newline = f"<h{hashcount}>{text}</h{hashcount}>"
             outputstr += newline + NL    
         
+        #FIXME
         elif line.startswith("-"):
             newline = f"<li>{line[2:]}</li>"
             outputstr += newline + NL
@@ -45,7 +48,9 @@ with open(htmlfile, "a") as filewriter:
 with open(htmlfile) as filereader:
     print(filereader.read())
 
-# preferably be able to do:
+
+
+#TODO: preferably be able to do:
 # - python weave.py "markdownfile.md" <- outputs file to same directory, default to same name as md file
 # - python weave.py "markdownfile.md" --output-dir "outputdir" <- output to specific directory, default to same name as md file
 # - python weave.py "markdownfile.md" --output-file-name "newfile.html" <- specify name of new html file
