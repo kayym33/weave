@@ -3,70 +3,68 @@ Python tool to convert a md file to html file :3
 """
 
 # important stuff 
-import sys
+import argparse
+from pathlib import Path
 INDENT = (" " * 4)
 NL = "\n"
 
 
-#TODO: preferably be able to do:
-# - python weave.py "markdownfile.md" <- outputs file to same directory, default to same name as md file
-# - python weave.py "markdownfile.md" --output-dir "outputdir" <- output to specific directory, default to same name as md file
-# - python weave.py "markdownfile.md" --output-file-name "newfile.html" <- specify name of new html file
-# all of them together
-# python weave.py "markdownfile.md" --output-dir "/desktop" --ouput-file-name "index.html"
- 
-
 def main():
-    filepath = sys.argv[1]
-    #newOutputDirectory = sys.arv[2]
-    #newFileName = sys.argv[3]
     
-    parse(filepath)
+    parser = argparse.ArgumentParser()
+    
+    # mandatory args:
+    parser.add_argument("filepath")
+    
+    # optional args:
+    parser.add_argument("--output-dir", "-d", default=".")
+    parser.add_argument("--output-file-name", "-o", default="index.html")
+    
+    args = parser.parse_args()
+    
+    parse(args.filepath, args.output_dir, args.output_file_name)
     
 
-def parse(filepath):
-    outputstr = ""
+def parse(filepath, output_dir, output_file_name):
+    output = ""
     
-    with open(filepath) as mdfile:
-        for line in mdfile:
+    with open(filepath) as md_file:
+        for line in md_file:
             line = line.rstrip("\n")
             
             if line.startswith("#"):
-                hashcount = 0
+                hash_count = 0
                 for char in line:
                     if char == "#":
-                        hashcount += 1
+                        hash_count += 1
                     else:
                         break
-                text = line[hashcount:].strip()
-                newline = f"<h{hashcount}>{text}</h{hashcount}>"
-                outputstr += newline + NL    
+                text = line[hash_count:].strip()
+                new_line = f"<h{hash_count}>{text}</h{hash_count}>"
+                output += new_line + NL    
             
             #FIXME
             elif line.startswith("-"):
-                newline = f"<li>{line[2:]}</li>"
-                outputstr += newline + NL
+                new_line = f"<li>{line[2:]}</li>"
+                output += new_line + NL
             else:
-                newline = f"<p>{line}</p>"
-                outputstr += newline + NL
+                new_line = f"<p>{line}</p>"
+                output += new_line + NL
                 
-    outputtofile(outputstr)
+    outputtofile(output, output_dir, output_file_name)
 
 
-# output to html file
-def outputtofile(outputstr):
-    import random
-    x = "newhtml" + str(random.randint(1111,9999)) 
-    htmlfile = f"{x}.html"
-
-    # create new file
-    with open(htmlfile, "a") as filewriter:
-        filewriter.write(outputstr)
+def outputtofile(output, output_dir, output_file_name):
+    
+    # build output path
+    output_path = Path(output_dir) / output_file_name
+    
+    # create dir if not exist
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    with open(output_path, "w") as fw:
+        fw.write(output)
         
-    # print contents of file
-    with open(htmlfile) as filereader:
-        print(filereader.read())
-
-
+        
 if __name__ == '__main__':
     main()
