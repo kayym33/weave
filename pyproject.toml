@@ -1,6 +1,9 @@
 [project]
-name = "weave"
-version = "0.1.0"
+name = "weave-md"
+version = "1.0.0"
+description = "Markdown to HTML converter"
+authors = [{name = "kayla"}]
+dependencies = ["requests"]
 
 [project.scripts]
 weave = "weave:main"
